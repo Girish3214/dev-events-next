@@ -1,3 +1,4 @@
+import BookEvent from "@/components/BookEvent";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -46,7 +47,11 @@ const EventDetails = async ({
 }) => {
   const { slug } = await params;
 
-  const request = await fetch(`${BASE_URL}/api/events/${slug}`);
+  const request = await fetch(`${BASE_URL}/api/events/${slug}`, {
+    next: {
+      revalidate: 60,
+    },
+  });
   const {
     event: {
       title,
@@ -66,6 +71,7 @@ const EventDetails = async ({
   } = await request.json();
 
   if (!title || !description) return notFound();
+  const bookings = 10;
   return (
     <section id="event">
       <div className="header">
@@ -121,8 +127,17 @@ const EventDetails = async ({
           </section>
         </div>
         <aside className="booking">
-          <p className="text-lg font-semibold">Book your ticket now</p>
-          <button>Book Now</button>
+          <div className="signup-card">
+            <h2>Sign Up</h2>
+            {bookings > 0 ? (
+              <p className="text-sm">
+                Join {bookings} people who are also interested in this event
+              </p>
+            ) : (
+              <p className="text-sm">Be the first to join this event </p>
+            )}
+            <BookEvent />
+          </div>
         </aside>
       </div>
     </section>
