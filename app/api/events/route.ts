@@ -4,7 +4,6 @@ import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  console.log(">>> DEBUG: POST /api/events hit at " + new Date().toISOString());
   try {
     await connectDB();
     const formData = await request.formData();
