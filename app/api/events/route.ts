@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
           error:
             error instanceof Error ? error.message : "Internal Server Error",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -32,9 +32,17 @@ export async function POST(request: NextRequest) {
         {
           message: "Image file is required",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
+
+    let tags = JSON.parse(formData.get("tags") as string);
+    tags = tags.map((tag: string) => tag.trim().toLowerCase());
+    event.tags = tags;
+
+    let agenda = JSON.parse(formData.get("agenda") as string);
+    agenda = agenda.map((item: string) => item.trim().toLowerCase());
+    event.agenda = agenda;
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -51,21 +59,25 @@ export async function POST(request: NextRequest) {
               reject(err);
             }
             resolve(result);
-          }
+          },
         )
         .end(buffer);
     });
 
     event.image = (uploadResult as { secure_url: string }).secure_url;
 
-    const createdEvent = await Event.create(event);
+    const createdEvent = await Event.create({
+      ...event,
+      tags: tags,
+      agenda: agenda,
+    });
 
     return NextResponse.json(
       {
         message: "Event created successfully",
         event: createdEvent,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Event creation failed", error);
@@ -74,7 +86,7 @@ export async function POST(request: NextRequest) {
         message: "Event creation failed",
         error: error instanceof Error ? error.message : "Internal Server Error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -88,7 +100,7 @@ export async function GET() {
         message: "Events retrieved successfully",
         events: events,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Event retrieval failed", error);
@@ -97,7 +109,7 @@ export async function GET() {
         message: "Event retrieval failed",
         error: error instanceof Error ? error.message : "Internal Server Error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

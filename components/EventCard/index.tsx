@@ -21,7 +21,7 @@ const EventCard = ({
         height={300}
       />
       <div className="flex flex-row gap-2">
-        <Image src={"./icons/pin.svg"} alt="pin" width={14} height={14} />
+        <Image src={"/icons/pin.svg"} alt="pin" width={14} height={14} />
         <p>{location}</p>
       </div>
       <div className="title">{title}</div>
